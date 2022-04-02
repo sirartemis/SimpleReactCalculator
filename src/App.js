@@ -150,7 +150,7 @@ function formatOperand(operand) {
 
 function App() {
   const [{
-    currentOperand,
+    currentOperand = '0',
     previousOperand,
     operator
   }, dispatch] = useReducer(reducer, {});
