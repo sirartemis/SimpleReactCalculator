@@ -1,176 +1,58 @@
 import { useReducer } from 'react';
-import DigitButton from './DigitButton';
-import OperationButton from './operationButton';
+/************************************/
+// Components
+/* Have a markup of the repeating
+elements and declares calling reducer actions,
+reacting to events
+ */
+
+import DigitButton from './DigitButton'; // 1,2,3,4,5,6,7,8,9 and .(delimeter)
+import OperationButton from './operationButton'; // *,/,+,-
+
+// styles
 import './styles.css';
 
-export const ACTIONS =  {
-  ADD_DIGIT: 'add-digit',
-  CHOOSE_OPERATION: 'choose-operation',
-  CLEAR: 'clear',
-  DELETE_DIGIT: 'delete-digit',
-  EVALUATE: 'evaluate',
-}
+// reducer for calculator
+import ACTIONS from './actions'; // action types
+import reducer from './reducer'; // switching actions by events
 
-function reducer(state, { type, payload }) {
-  switch(type) {
-    case ACTIONS.ADD_DIGIT:
-      if (state.overwrite) {
-        return {
-          ...state,
-          currentOperand: payload.digit,
-          overwrite: false,
-        }
-      }
-      if (payload.digit === '0' && state.currentOperand === '0') {
-        return state;
-      }
-      if (payload.digit === '.' && state.currentOperand.includes('.')) {
-        return state;
-      }
-      return {
-        ...state,
-        currentOperand: `${state.currentOperand || ""}${payload.digit}`
-      }
-    case ACTIONS.DELETE_DIGIT: {
-      if (state.overwrite) {
-        return {
-          ...state,
-          overwrite: false,
-          currentOperand: null,
-        }
-      }
-      if (state.currentOperand == null) return state;
-      if (state.currentOperand.length === 1) {
-        return {
-          ...state,
-          currentOperand: null
-        }
-      }
+// functions
+import formatOperand from './formatOperand'; // dividing thousands
 
-      return {
-        ...state,
-        currentOperand: state.currentOperand.slice(0, -1),
-      }
-    }
-    case ACTIONS.CLEAR: 
-      return {}
-    case ACTIONS.CHOOSE_OPERATION: {
-      if ( state.currentOperand == null 
-          && state.previousOperand == null) {
-            return state;
-          }
-      if ( state.currentOperand == null) {
-        return {
-          ...state,
-          operator: payload.operator,
-        }
-      }
-      if ( state.previousOperand == null) {
-        return {
-          ...state,
-          operator: payload.operator,
-          previousOperand: state.currentOperand,
-          currentOperand: null,
-        }
-      }
-
-      return {
-        ...state,
-        previousOperand: evaluate(state),
-        operator: payload.operator,
-        currentOperand: null,
-      }
-    }
-    case ACTIONS.EVALUATE: {
-      if ( state.operator == null ||
-           state.currentOperand == null ||
-           state.previousOperand == null ) {
-             return state
-           }
-      return {
-        ...state,
-        overwrite: true,
-        previousOperand: null,
-        operator: null,
-        currentOperand: evaluate(state)
-      }
-    }
-    default: {
-      return state;
-    }
-  }
-}
-
-function evaluate({
-  currentOperand,
-  previousOperand,
-  operator,
-}) {
-  const prev = parseFloat(previousOperand)
-  const current = parseFloat(currentOperand)
-  if (isNaN(prev) || isNaN(current)) return '';
-
-  let computation = '';
-
-  switch (operator) {
-    case '+': {
-      computation = prev + current
-      break;
-    }
-    case '-': {
-      computation = prev - current
-      break;
-    }
-    case '/': {
-      computation = prev / current
-      break;
-    }
-    case '*': {
-      computation = prev * current
-      break;
-    }
-    default: {
-      return ''
-    }
-  }
-
-  return computation.toString()
-}
-
-const INTEGER_FORMATTER = new Intl.NumberFormat("en-us", {
-  maximumFractionDigits: 0,
-})
-
-function formatOperand(operand) {
-  if (operand == null) return
-  const [integer, decimal] = operand.split('.')
-  if (decimal == null) return INTEGER_FORMATTER.format(integer)
-  return `${INTEGER_FORMATTER.format(integer)}.${decimal}`
-}
-
-function App() {
+// Actually, the calculator
+export default function App() {
+  // declare the reducer for calculator
+  // and adding state parameters
+  // In this i don't declare the 'overwrite' parameter
+  // because it using as condition for the overwrite previous results
+  // and don't need in the initial state
   const [{
-    currentOperand = '0',
-    previousOperand,
-    operator
-  }, dispatch] = useReducer(reducer, {});
+    currentOperand = '0', // begining value of the calculator
+    previousOperand, // above the current operand
+    operator // after the previous operand
+  }, dispatch] = useReducer(reducer, {}); // initial state is empty
 
   return (
-   <div className="calculator-grid"> 
-    <div className="output">
+   <div className="calculator-grid">  {/* the main container*/}
+    <div className="output"> {/* calculators display */}
       <div className="previous-operand">
-        {formatOperand(previousOperand)} {operator}
+        {formatOperand(previousOperand)} {operator} {/* the top part */}
       </div>
       <div className="current-operand">
-        {formatOperand(currentOperand)}
+        {formatOperand(currentOperand)}             {/* the bottom part */}
       </div>
-    </div>
+    </div>                   {/* the end of the display */}
+      {/************************************/}
+      {/* reset button */}
       <button 
-        className="span-two" 
+        className="span-two"  
         onClick={ () => dispatch({ type: ACTIONS.CLEAR })}
       >
         AC
       </button>
+      {/* reset button's end */}
+      {/************************************/}
+      {/* delete button */}
       <button
         onClick={() => dispatch({
           type: ACTIONS.DELETE_DIGIT
@@ -178,6 +60,13 @@ function App() {
         >
           DEL
       </button>
+      {/* delete button's end */}
+      {/************************************/}
+      {/* here i pasting repeating components
+          and writing props,
+          for operators - operator prop,
+          for digit - digit,
+      and dispatch function as dispatch prop */}
       <OperationButton operator='/' dispatch={dispatch} />
       <DigitButton digit='1' dispatch={dispatch} />
       <DigitButton digit='2' dispatch={dispatch} />
@@ -193,6 +82,7 @@ function App() {
       <OperationButton operator='-' dispatch={dispatch} />
       <DigitButton digit='.' dispatch={dispatch} />
       <DigitButton digit='0' dispatch={dispatch} />
+      {/* evaluate button */}
       <button 
         className="span-two"
         onClick={ () => dispatch({
@@ -200,8 +90,7 @@ function App() {
         })}>
           =
         </button>
-   </div> 
+      {/* the end of the evaluate button */}
+   </div> // the end of the main container "calculator-grid" 
   );
 }
-
-export default App;
