@@ -1,5 +1,7 @@
-import { ACTIONS } from "./App";
+import ACTIONS from "./actions"; // we need actions )))
 
+// Same as DigitButton
+// except that instead of a digit, the operator
 export default function OperationButton({
     dispatch,
     operator
