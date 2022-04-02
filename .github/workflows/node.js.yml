@@ -26,7 +26,15 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-    - run: yarn ci
-    - run: yarn build --if-present
-    - run: yarn test
+    - name: Build
+      run: |
+        cd ./calculator
+        yarn install
+        yarn build
+    - name: Deploy
+      uses: crazy-max/ghaction-github-pages@v1
+      with:
+        target_branch: gh-pages
+        build_dir: public
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
