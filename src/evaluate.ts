@@ -1,3 +1,5 @@
+import { State } from "./reducer";
+
 /* This is the function, that
    calculate result of the operation
 */
@@ -5,7 +7,7 @@ export default function evaluate({
   currentOperand,
   previousOperand,
   operator,
-}) {
+}: State): string {
   const prev = parseFloat(previousOperand)   // number with decimal
   const current = parseFloat(currentOperand) // number with decimal
   
@@ -13,7 +15,7 @@ export default function evaluate({
   // is it operation full, if user clicked evaluate button
   if (isNaN(prev) || isNaN(current)) return '';
 
-  let computation = ''; // default value of result of this function
+  let computation: number; // default value of result of this function
                         // although it's all the same function returns empty string
   switch (operator) {
     case '+': {

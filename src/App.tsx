@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import React,{ useReducer } from 'react';
 /************************************/
 // Components
 /* Have a markup of the repeating
@@ -20,7 +20,7 @@ import reducer from './reducer'; // switching actions by events
 import formatOperand from './formatOperand'; // dividing thousands
 
 // Actually, the calculator
-export default function App() {
+const App: React.FC = () => {
   // declare the reducer for calculator
   // and adding state parameters
   // In this i don't declare the 'overwrite' parameter
@@ -94,3 +94,5 @@ export default function App() {
    </div> // the end of the main container "calculator-grid" 
   );
 }
+
+export default App;

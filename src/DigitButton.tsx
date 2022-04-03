@@ -1,4 +1,4 @@
-import ACTIONS from "./actions.js" // using as action types for reducer
+import ACTIONS from "./actions" // using as action types for reducer
 
 // Actually the digit button React component
 export default function DigitButton({

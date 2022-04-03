@@ -1,13 +1,29 @@
 import ACTIONS from "./actions";
 import evaluate from "./evaluate";
 
+export interface State {
+  currentOperand?: string;
+  previousOperand?: string;
+  operator?: string;
+  overwrite?: boolean;
+}
+
+interface Payload {
+  digit?: string | '';
+  operator?: string;
+}
+
+export interface Action {
+  type: string;
+  payload?: Payload;
+}
 // Here i define,
 // what action does what
 // with the help of a reducer
 // i'm passing the current state
 // and action's object, that contains
-// action type and passed from users choosed values
-export default function reducer(state, { type, payload }) {
+// action type and passed users choosed values
+const reducer = (state: State, {type, payload}: Action) => {
   switch(type) {
     // what happens if the user clicks on the digit
     case ACTIONS.ADD_DIGIT:  
@@ -15,23 +31,23 @@ export default function reducer(state, { type, payload }) {
       if (state.overwrite) {
         return {
           ...state,
-          currentOperand: payload.digit,
+          currentOperand: payload?.digit,
           overwrite: false,
         }
       }
       // if user clicked '0' and it is a zero on a display
-      if (payload.digit === '0' && state.currentOperand === '0') {
+      if (payload?.digit === '0' && state.currentOperand === '0') {
         return state;
       }
       // if there is a number with decimal on a display
       // and user clicks on the '.'
-      if (payload.digit === '.' && state.currentOperand.includes('.')) {
+      if (payload?.digit === '.' && state.currentOperand?.includes('.')) {
         return state;
       }
       // in all other cases
       return {
         ...state,
-        currentOperand: `${state.currentOperand || ""}${payload.digit}`
+        currentOperand: `${state.currentOperand || ""}${payload?.digit}`
       }
     // what happens if the user clicks delete button
     case ACTIONS.DELETE_DIGIT: {
@@ -72,14 +88,14 @@ export default function reducer(state, { type, payload }) {
       if ( state.currentOperand == null) {
         return {
           ...state,
-          operator: payload.operator,
+          operator: payload?.operator,
         }
       }
       // here we swap operands and also add the operator on a display
       if ( state.previousOperand == null) {
         return {
           ...state,
-          operator: payload.operator,
+          operator: payload?.operator,
           previousOperand: state.currentOperand,
           currentOperand: null,
         }
@@ -90,7 +106,7 @@ export default function reducer(state, { type, payload }) {
       return {
         ...state,
         previousOperand: evaluate(state),
-        operator: payload.operator,
+        operator: payload?.operator,
         currentOperand: null,
       }
     }
@@ -117,3 +133,5 @@ export default function reducer(state, { type, payload }) {
     }
   }
 }
+
+export default reducer;
